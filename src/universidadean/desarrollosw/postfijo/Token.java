@@ -128,7 +128,7 @@ class Token {
      * @param expresion la expresión a partir
      * @return una lista con los componentes de la expresión
      */
-    public static List<String> dividir(String expresion) throws Exception{
+    public static List<Token> dividir(String expresion) throws Exception{
         StringReader sr = new StringReader(expresion);
         StreamTokenizer st = new StreamTokenizer(sr);
 
@@ -137,14 +137,14 @@ class Token {
         st.commentChar('#');
         st.ordinaryChar('/');
 
-        List<String> tokenList = new ArrayList<>();
+        List<Token> tokenList = new ArrayList<>();
 
         try {
             int tok = st.nextToken();
             while (tok != StreamTokenizer.TT_EOF) {
                 Token t = new Token(tok, st.sval, (int) st.nval);
                 if (t.isNumber() || t.isOperator()) {
-                    tokenList.add(t.getValue());
+                    tokenList.add(t);
                 }
                 else {
                     throw new Exception(String.format("Elemento '%s' desconocido", t.getValue()));

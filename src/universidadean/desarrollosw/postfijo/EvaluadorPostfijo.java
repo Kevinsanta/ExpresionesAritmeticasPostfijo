@@ -29,10 +29,54 @@ public class EvaluadorPostfijo {
      * @param expresion una lista de elementos con números u operadores
      * @return el resultado de la evaluación de la expresión.
      */
-    static int evaluarPostFija(List<String> expresion) {
+    static int evaluarPostFija(List<Token> expresion) throws Exception {
         Stack<Integer> pila = new Stack<>();
 
-        // TODO: Realiza la evaluación de la expresión en formato postfijo
+        if(!expresion.isEmpty()){
+            for (int i = 0; i < expresion.size(); i++) {
+                Token token = expresion.get(i);
+                if(token.isNumber()){
+                    pila.push(token.getNumber());
+                } else if(token.isOperator()){
+                    char operador = token.getOperator();
+                    if(pila.size() < 2){
+                        throw new Exception("No hay suficientes numeros para ejecutar la operacion " + operador);
+                    }
+                    else{
+                        Integer ultimoElemento = pila.pop();
+                        Integer penultimoElemento = pila.pop();
+                        Integer resultadoOperacion = 0;
+                        switch (operador){
+                            case '+':
+                                resultadoOperacion = penultimoElemento + ultimoElemento;
+                                break;
+                            case '-':
+                                resultadoOperacion = penultimoElemento - ultimoElemento;
+                                break;
+                            case '*':
+                                resultadoOperacion = penultimoElemento * ultimoElemento;
+                                break;
+                            case '/':
+                                resultadoOperacion = penultimoElemento / ultimoElemento;
+                                break;
+                            case '%':
+                                resultadoOperacion = penultimoElemento % ultimoElemento;
+                                break;
+                            case '^':
+                                resultadoOperacion = penultimoElemento ^ ultimoElemento;
+                                break;
+                            default:
+                                throw new Exception("Operador " + token.getOperator() + " no soportado");
+                        }
+                        pila.push(resultadoOperacion);
+                    }
+                }
+            }
+        }
+
+        if(pila.size() > 1){
+            throw new Exception("Hay demasiados elementos en la pila");
+        }
 
         return pila.pop();
     }
@@ -47,7 +91,7 @@ public class EvaluadorPostfijo {
         String linea = teclado.nextLine();
 
         try {
-            List<String> expresion = Token.dividir(linea);
+            List<Token> expresion = Token.dividir(linea);
             System.out.println(evaluarPostFija(expresion));
         }
         catch (Exception e) {
